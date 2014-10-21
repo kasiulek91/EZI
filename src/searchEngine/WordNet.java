@@ -1,14 +1,11 @@
 package searchEngine;
 
-import java.awt.List;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import edu.cmu.lti.lexical_db.ILexicalDatabase;
@@ -76,14 +73,32 @@ public class WordNet {
 			}
 
 		}
-		Map<String, Double> sortedMap = new TreeMap<String, Double>();
-
-		for (Map.Entry<String, Double> entry : sortedMap.entrySet()) {
+		int i=0;
+		for (Map.Entry<String, Double> entry : entriesSortedByValues(wordsMap)) {
 			System.out.println("Key : " + entry.getKey() + " Value : "
 					+ entry.getValue());
+			
+			returnSet.add(entry.getKey());
+			i++;
+			if(i>=5) {
+				break;
+			}
 		}
 
 		return returnSet;
 	}
+	
+	static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
+        SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
+            new Comparator<Map.Entry<K,V>>() {
+                @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
+                    int res = e2.getValue().compareTo(e1.getValue());
+                    return res != 0 ? res : 1; // Special fix to preserve items with equal values
+                }
+            }
+        );
+        sortedEntries.addAll(map.entrySet());
+        return sortedEntries;
+    }
 
 }
