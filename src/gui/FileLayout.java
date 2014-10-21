@@ -31,14 +31,17 @@ public class FileLayout {
 	private TFIDFSol tfidf;
 	private Stemmer st = new Stemmer();
 	private JTabbedPane tabbedPane;
+	private MainPanel mainPanel;
 	private JTextField searchFiled;
 	private Vector<String> db;
 	private Vector<String> titles;
 	private Vector<String> keywords;
 	private int documentsReady = 0;
 
-	public FileLayout(JTabbedPane tabbedPane, TFIDFSol tfidf) {
+	public FileLayout(MainPanel mainPanel, JTabbedPane tabbedPane,
+			TFIDFSol tfidf) {
 		this.tabbedPane = tabbedPane;
+		this.mainPanel = mainPanel;
 		this.tfidf = tfidf;
 	}
 
@@ -70,28 +73,22 @@ public class FileLayout {
 						tfidf.setDb(stem, titles);
 						tabbedPane.setEnabledAt(1, true);
 						createDocumentPanel(1, stem);
-						clearFields();
+					
 					} else {
 						readKeywordsFile(file);
 						Vector<String> stem = st.stemVector(keywords);
 						tfidf.setKeywords(stem);
 						tabbedPane.setEnabledAt(2, true);
 						createDocumentPanel(2, stem);
-						clearFields();
 					}
 					jText.setForeground(Color.BLACK);
-					jText.setText("Wybrano plik " + file.getPath());
+				//	jText.setText("Wybrano plik " + file.getPath());
+					buttonOpen.setEnabled(false);
 					documentsReady++;
 					if (documentsReady == 2) {
-						documentsReady = 0;
 						tfidf.init();
-						searchFiled.setEnabled(true);
+						mainPanel.makeSearchPanelVisible();
 					}
-					// else {
-					// JOptionPane
-					// .showMessageDialog(fc,
-					// "Najpierw wczytaj plik z dokumentami oraz z termami!");
-					// }
 				} else {
 					jText.setForeground(Color.RED);
 					jText.setText("Nie wybrano pliku!");
@@ -130,12 +127,6 @@ public class FileLayout {
 			newDB.add(tmpS);
 		}
 		return newDB;
-	}
-
-	private void clearFields() {
-		tabbedPane.getComponentAt(0);
-		// resultTab.clearTable();
-		searchFiled.setText("");
 	}
 
 	private void readDocumentsFile(File document) {

@@ -31,7 +31,6 @@ public class EZI {
 
 	private static void createAndShowGUI() {
 		final EZI instance = new EZI();
-
 		final JFrame frame = new JFrame("EZI - projekt 1");
 		frame.getContentPane().add(instance.createMainPanel());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

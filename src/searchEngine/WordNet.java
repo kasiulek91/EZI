@@ -31,7 +31,7 @@ public class WordNet {
 			for (int i = 0; i < synsets.length; i++) 
 			{ 
 				nounSynset = (NounSynset)(synsets[i]); 
-				hyponyms = nounSynset.getTopics(); 
+				hyponyms = nounSynset.getHyponyms(); 
 				
 				for (int j = 0; j < hyponyms.length;j++)
 				{ 
