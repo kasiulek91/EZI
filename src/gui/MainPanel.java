@@ -1,10 +1,12 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -25,10 +27,10 @@ public class MainPanel {
 	private ResultTable resultTab;
 	private FileLayout fileLayout;
 	private JPanel searchPanel;
-	
+	private ExpandPanel expandPanel;
 
 	public MainPanel(JTabbedPane tabbedPane) {
-		fileLayout = new FileLayout(this, tabbedPane,tfidf);
+		fileLayout = new FileLayout(this, tabbedPane, tfidf);
 	}
 
 	private JPanel createSearchInput() {
@@ -36,45 +38,8 @@ public class MainPanel {
 		searchButton = new JButton("Szukaj");
 		searchFiled = new JTextField();
 
-		searchFiled.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				String text = searchFiled.getText();
-
-				Vector<DocScore> results = tfidf
-						.rank(convertSearchString(text));
-
-				WordNet wordnet = new WordNet();
-				wordnet.searchExtendedWords(text);
-
-				if (results != null) {
-					resultTab.addNewValues(results);
-				} else {
-					resultTab.clearTable();
-				}
-			}
-		});
-
-		searchButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				String text = searchFiled.getText();
-
-				Vector<DocScore> results = tfidf
-						.rank(convertSearchString(text));
-
-				WordNet wordnet = new WordNet();
-				wordnet.searchExtendedWords(text);
-
-				if (results != null) {
-					resultTab.addNewValues(results);
-				} else {
-					resultTab.clearTable();
-				}
-			}
-		});
+		searchFiled.addActionListener(new MyActionListener());
+		searchButton.addActionListener(new MyActionListener());
 
 		fileLayout.setSearchFiled(searchFiled);
 
@@ -83,11 +48,24 @@ public class MainPanel {
 
 		return jPanel;
 	}
-	
+
 	public void makeSearchPanelVisible() {
 		resultTab = new ResultTable();
 		searchPanel.add(createSearchInput(), BorderLayout.NORTH);
 		searchPanel.add(resultTab.getScrollPane(), BorderLayout.CENTER);
+		searchPanel.add(createExpandPanel(), BorderLayout.SOUTH);
+	}
+
+	private JComponent createExpandPanel() {
+		expandPanel = new ExpandPanel();
+		return expandPanel;
+	}
+
+	public void makeExtansion(Vector<String> words) {
+		expandPanel.addEnableWord("Spróbuj tak¿e: ");
+		for ( int i=0; i<5; i++) {
+			expandPanel.addNewWord(words.elementAt(i));
+		}
 	}
 
 	public JComponent createSearchPanel() {
@@ -115,6 +93,30 @@ public class MainPanel {
 		return newString;
 	}
 	
-	
+	public class MyActionListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String text = searchFiled.getText();
+
+			Vector<DocScore> results = tfidf
+					.rank(convertSearchString(text));
+			WordNet wordnet = new WordNet();
+		
+
+			if (results != null) {
+				resultTab.addNewValues(results);
+				makeExtansion(wordnet.searchExtendedWords(text)); 
+				searchPanel.revalidate();
+				searchPanel.repaint();
+			} else {
+				resultTab.clearTable();
+			}
+			
+		}
+
+	}
 
 }
+
+
