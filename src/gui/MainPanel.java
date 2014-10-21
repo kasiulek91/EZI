@@ -3,10 +3,13 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -26,6 +29,7 @@ public class MainPanel {
 	private FileLayout fileLayout;
 	private JPanel searchPanel;
 	private ExpandPanel expandPanel;
+	private Boolean showExtension = true;
 
 	public MainPanel(JTabbedPane tabbedPane) {
 		fileLayout = new FileLayout(this, tabbedPane, tfidf);
@@ -47,11 +51,28 @@ public class MainPanel {
 		return jPanel;
 	}
 
+	private JCheckBox createCheckBox() {
+		final JCheckBox checkExtension = new JCheckBox("Pokazuj rozszerzenia",
+				true);
+		 checkExtension.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				expandPanel.setVisible(checkExtension.isSelected());
+				showExtension = checkExtension.isSelected();
+			}
+		});
+
+		return checkExtension;
+	}
+
 	public void makeSearchPanelVisible() {
 		resultTab = new ResultTable();
-		searchPanel.add(createSearchInput(), BorderLayout.NORTH);
-		searchPanel.add(resultTab.getScrollPane(), BorderLayout.CENTER);
-		searchPanel.add(createExpandPanel(), BorderLayout.SOUTH);
+		searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.PAGE_AXIS));
+		searchPanel.add(createCheckBox());
+		searchPanel.add(createSearchInput());
+		searchPanel.add(resultTab.getScrollPane());
+		searchPanel.add(createExpandPanel());
 	}
 
 	private JComponent createExpandPanel() {
@@ -118,7 +139,9 @@ public class MainPanel {
 			} else {
 				resultTab.clearTable();
 			}
-			makeExtansion(wordnet.searchExtendedWords(text));
+		//	if (showExtension) {
+				makeExtansion(wordnet.searchExtendedWords(text));
+		//	}
 
 		}
 
