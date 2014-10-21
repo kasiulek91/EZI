@@ -57,14 +57,19 @@ public class MainPanel {
 	}
 
 	private JComponent createExpandPanel() {
-		expandPanel = new ExpandPanel();
+		expandPanel = new ExpandPanel(this);
 		return expandPanel;
 	}
 
 	public void makeExtansion(Vector<String> words) {
-		expandPanel.addEnableWord("Spróbuj tak¿e: ");
-		for ( int i=0; i<5; i++) {
-			expandPanel.addNewWord(words.elementAt(i));
+		expandPanel.removeAll();
+		if (words == null) {
+			expandPanel.addEnableWord("Brak znalezionych s³ów!");
+		} else {
+			expandPanel.addEnableWord("Spróbuj tak¿e: ");
+			for (int i = 0; i < 5; i++) {
+				expandPanel.addNewWord(words.elementAt(i));
+			}
 		}
 	}
 
@@ -92,31 +97,33 @@ public class MainPanel {
 		}
 		return newString;
 	}
-	
-	public class MyActionListener implements ActionListener{
+
+	public void setSearchField(String searchText) {
+		searchFiled.setText(searchText);
+		searchButton.doClick();
+	}
+
+	public class MyActionListener implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String text = searchFiled.getText();
 
-			Vector<DocScore> results = tfidf
-					.rank(convertSearchString(text));
+			Vector<DocScore> results = tfidf.rank(convertSearchString(text));
 			WordNet wordnet = new WordNet();
-		
 
 			if (results != null) {
 				resultTab.addNewValues(results);
-				makeExtansion(wordnet.searchExtendedWords(text)); 
+				makeExtansion(wordnet.searchExtendedWords(text));
 				searchPanel.revalidate();
 				searchPanel.repaint();
 			} else {
 				resultTab.clearTable();
+				makeExtansion(null);
 			}
-			
+
 		}
 
 	}
 
 }
-
-
