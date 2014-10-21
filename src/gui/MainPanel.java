@@ -1,12 +1,10 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -63,11 +61,11 @@ public class MainPanel {
 
 	public void makeExtansion(Vector<String> words) {
 		expandPanel.removeAll();
-		if (words == null) {
+		if (words.size() == 0) {
 			expandPanel.addEnableWord("Brak znalezionych s³ów!");
 		} else {
 			expandPanel.addEnableWord("Spróbuj tak¿e: ");
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < Math.min(5, words.size()); i++) {
 				expandPanel.addNewWord(words.elementAt(i));
 			}
 		}
@@ -114,13 +112,13 @@ public class MainPanel {
 
 			if (results != null) {
 				resultTab.addNewValues(results);
-				makeExtansion(wordnet.searchExtendedWords(text));
+
 				searchPanel.revalidate();
 				searchPanel.repaint();
 			} else {
 				resultTab.clearTable();
-				makeExtansion(null);
 			}
+			makeExtansion(wordnet.searchExtendedWords(text));
 
 		}
 
